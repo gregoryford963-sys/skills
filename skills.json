@@ -190,16 +190,19 @@
     },
     {
       "name": "identity",
-      "description": "ERC-8004 on-chain agent identity and reputation management — register agent identities, query identity info, submit and retrieve reputation feedback, and manage third-party validation requests.",
+      "description": "ERC-8004 on-chain agent identity management — register agent identities, update URI and metadata, manage operator approvals, set/unset agent wallet, transfer identity NFTs, and query identity info.",
       "entry": "identity/identity.ts",
       "arguments": [
         "register",
         "get",
-        "give-feedback",
-        "get-reputation",
-        "request-validation",
-        "get-validation-status",
-        "get-validation-summary"
+        "set-uri",
+        "set-metadata",
+        "set-approval",
+        "set-wallet",
+        "unset-wallet",
+        "transfer",
+        "get-metadata",
+        "get-last-id"
       ],
       "requires": [
         "wallet"
@@ -334,6 +337,32 @@
       "userInvocable": false
     },
     {
+      "name": "reputation",
+      "description": "ERC-8004 on-chain agent reputation management — submit and revoke feedback, append responses, approve clients, and query reputation summaries, feedback entries, and client lists.",
+      "entry": "reputation/reputation.ts",
+      "arguments": [
+        "give-feedback",
+        "revoke-feedback",
+        "append-response",
+        "approve-client",
+        "get-summary",
+        "read-feedback",
+        "read-all-feedback",
+        "get-clients",
+        "get-feedback-count",
+        "get-approved-limit",
+        "get-last-index"
+      ],
+      "requires": [
+        "wallet"
+      ],
+      "tags": [
+        "l2",
+        "write"
+      ],
+      "userInvocable": false
+    },
+    {
       "name": "sbtc",
       "description": "sBTC token operations on Stacks L2 — check balances, transfer sBTC, get deposit info, check peg statistics, deposit BTC to receive sBTC, and track deposit status. Transfer and deposit operations require an unlocked wallet.",
       "entry": "sbtc/sbtc.ts",
@@ -357,7 +386,7 @@
     },
     {
       "name": "settings",
-      "description": "Manage AIBTC skill settings stored at ~/.aibtc/config.json. Configure the Hiro API key for authenticated rate limits, set a custom Stacks API node URL, and check the current package version.",
+      "description": "Manage AIBTC skill settings stored at ~/.aibtc/config.json. Configure the Hiro API key for authenticated rate limits, set a custom Stacks API node URL, check the current package version, and diagnose x402 sponsor relay health.",
       "entry": "settings/settings.ts",
       "arguments": [
         "set-hiro-api-key",
@@ -366,7 +395,8 @@
         "set-stacks-api-url",
         "get-stacks-api-url",
         "delete-stacks-api-url",
-        "get-server-version"
+        "get-server-version",
+        "check-relay-health"
       ],
       "requires": [],
       "tags": [
@@ -502,6 +532,27 @@
         "get-info",
         "list-user-tokens",
         "get-holders"
+      ],
+      "requires": [
+        "wallet"
+      ],
+      "tags": [
+        "l2",
+        "write"
+      ],
+      "userInvocable": false
+    },
+    {
+      "name": "validation",
+      "description": "ERC-8004 on-chain agent validation management — request and respond to validations, and query validation status, summaries, and paginated lists by agent or validator.",
+      "entry": "validation/validation.ts",
+      "arguments": [
+        "request",
+        "respond",
+        "get-status",
+        "get-summary",
+        "get-agent-validations",
+        "get-validator-requests"
       ],
       "requires": [
         "wallet"
