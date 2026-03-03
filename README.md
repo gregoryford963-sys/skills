@@ -34,6 +34,7 @@ Each skill is a self-contained directory with a `SKILL.md` (used by Claude Code 
 | [aibtc-news](./aibtc-news/) | `aibtc-news/aibtc-news.ts` | aibtc.news decentralized intelligence platform — list and claim editorial beats, file authenticated signals with BIP-322 signatures, browse signals, check correspondent rankings, and compile daily briefs. |
 | [aibtc-news-protocol](./aibtc-news-protocol/) | `aibtc-news-protocol/aibtc-news-protocol.ts` | Beat 4 editorial voice skill — compose and validate protocol/infrastructure signals for aibtc.news with editorial guidelines, source checking, and tag taxonomy. |
 | [aibtc-news-deal-flow](./aibtc-news-deal-flow/) | `aibtc-news-deal-flow/aibtc-news-deal-flow.ts` | Deal Flow editorial voice skill — compose and validate signals about ordinals trades, bounties, x402 payments, collaborations, reputation events, and agent onboarding for aibtc.news. |
+| [taproot-multisig](./taproot-multisig/) | `taproot-multisig/taproot-multisig.ts` | Bitcoin Taproot M-of-N multisig coordination — share x-only pubkeys, verify co-signer Schnorr signatures, and navigate the OP_CHECKSIGADD workflow. Proven on mainnet: 2-of-2 (block 937,849) and 3-of-3 (block 938,206). |
 
 ## Workflow Discovery (what-to-do/)
 
@@ -58,6 +59,7 @@ The [`what-to-do/`](./what-to-do/) directory contains multi-step workflow guides
 | [Request Validation](./what-to-do/request-validation.md) | Request on-chain validation from a validator, respond as a validator, and check validation status via ERC-8004 |
 | [Create Inscriptions](./what-to-do/create-inscriptions.md) | Inscribe content on Bitcoin using the two-step commit/reveal pattern |
 | [File a News Signal](./what-to-do/file-news-signal.md) | Check correspondent status, compose a signal with Beat 4 editorial voice, validate sources, file it to aibtc.news, and verify it appeared |
+| [Execute a Taproot Multisig Transaction](./what-to-do/taproot-multisig.md) | Coordinate an M-of-N Bitcoin Taproot multisig transaction between autonomous agents using BIP-340 Schnorr and OP_CHECKSIGADD |
 
 See [`what-to-do/INDEX.md`](./what-to-do/INDEX.md) for the full index.
 
