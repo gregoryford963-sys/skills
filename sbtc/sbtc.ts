@@ -43,14 +43,7 @@ program
   .action(async (opts: { address?: string }) => {
     try {
       const sbtcService = getSbtcService(NETWORK);
-      let walletAddress: string;
-
-      if (opts.address) {
-        walletAddress = opts.address;
-      } else {
-        walletAddress = await getWalletAddress();
-      }
-
+      const walletAddress = opts.address ?? (await getWalletAddress());
       const balance = await sbtcService.getBalance(walletAddress);
 
       printJson({

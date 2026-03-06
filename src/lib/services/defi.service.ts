@@ -369,12 +369,6 @@ export class ZestProtocolService {
     this.contracts = getZestContracts(network);
   }
 
-  private ensureMainnet(): void {
-    if (!this.contracts) {
-      throw new Error("Zest Protocol is only available on mainnet");
-    }
-  }
-
   private getContracts(): NonNullable<ReturnType<typeof getZestContracts>> {
     if (!this.contracts) {
       throw new Error("Zest Protocol is only available on mainnet");
@@ -435,7 +429,7 @@ export class ZestProtocolService {
    * Returns the hardcoded asset list with full metadata
    */
   async getAssets(): Promise<ZestAsset[]> {
-    this.ensureMainnet();
+    this.getContracts(); // Validates mainnet-only availability
 
     return Object.values(ZEST_ASSETS).map((asset) => ({
       contractId: asset.token,
@@ -465,8 +459,6 @@ export class ZestProtocolService {
     asset: string,
     userAddress: string
   ): Promise<ZestUserPosition | null> {
-    this.ensureMainnet();
-
     try {
       const result = await this.hiro.callReadOnlyFunction(
         this.getContracts().poolBorrow,
@@ -509,8 +501,6 @@ export class ZestProtocolService {
     amount: bigint,
     onBehalfOf?: string
   ): Promise<TransferResult> {
-    this.ensureMainnet();
-
     const assetConfig = this.getAssetConfig(asset);
     const { address, name } = parseContractId(this.getContracts().borrowHelper);
     const [lpAddr, lpName] = parseContractIdTuple(assetConfig.lpToken);
@@ -554,8 +544,6 @@ export class ZestProtocolService {
     asset: string,
     amount: bigint
   ): Promise<TransferResult> {
-    this.ensureMainnet();
-
     const assetConfig = this.getAssetConfig(asset);
     const { address, name } = parseContractId(this.getContracts().borrowHelper);
     const [assetAddr, assetName] = parseContractIdTuple(assetConfig.token);
@@ -603,8 +591,6 @@ export class ZestProtocolService {
     asset: string,
     amount: bigint
   ): Promise<TransferResult> {
-    this.ensureMainnet();
-
     const assetConfig = this.getAssetConfig(asset);
     const { address, name } = parseContractId(this.getContracts().borrowHelper);
     const [assetAddr, assetName] = parseContractIdTuple(assetConfig.token);
@@ -652,8 +638,6 @@ export class ZestProtocolService {
     amount: bigint,
     onBehalfOf?: string
   ): Promise<TransferResult> {
-    this.ensureMainnet();
-
     const assetConfig = this.getAssetConfig(asset);
     const { address, name } = parseContractId(this.getContracts().poolBorrow);
     const [assetAddr, assetName] = parseContractIdTuple(assetConfig.token);
@@ -693,8 +677,6 @@ export class ZestProtocolService {
     account: Account,
     asset: string
   ): Promise<TransferResult> {
-    this.ensureMainnet();
-
     const assetConfig = this.getAssetConfig(asset);
     const { address, name } = parseContractId(this.getContracts().borrowHelper);
     const [lpAddr, lpName] = parseContractIdTuple(assetConfig.lpToken);
