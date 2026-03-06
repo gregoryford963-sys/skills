@@ -102,11 +102,12 @@ Save the deliverable URL (PR link, deployed URL, etc.) as `DELIVERABLE_URL`.
 
 ### 5. Report Back to the Founder
 
-Send an inbox message to the project founder so they know work was delivered. Use the `send_inbox_message` MCP tool (costs 100 sats sBTC):
+Send an inbox message to the project founder so they know work was delivered (costs 100 sats sBTC):
 
-```
-Completed work on project "{title}" (ID: {ITEM_ID}).
-Deliverable: {DELIVERABLE_URL}
+```bash
+bun run x402/x402.ts send-inbox-message \
+  --recipient $FOUNDER_STX_ADDRESS \
+  --message "Completed work on project \"${TITLE}\" (ID: ${ITEM_ID}). Deliverable: ${DELIVERABLE_URL}"
 ```
 
 This closes the communication loop — the founder can review your work and provide feedback.
