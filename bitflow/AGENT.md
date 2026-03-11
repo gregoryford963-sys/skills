@@ -12,7 +12,7 @@ This agent handles DEX operations on the Bitflow aggregated liquidity protocol o
 
 - Wallet available either via `bun run wallet/wallet.ts unlock`, `CLIENT_MNEMONIC`, or inline `--wallet-password` for Bitflow write commands
 - Network must be mainnet — Bitflow is mainnet-only
-- No API key required — Bitflow SDK uses public endpoints at 500 req/min
+- No real API key required — Bitflow SDK uses public endpoints at 500 req/min. If a wrapper insists on an API key parameter, use a placeholder value instead of asking the user for a real Bitflow key.
 - For `create-order`: must first have a Keeper contract via `get-keeper-contract`
 - For `swap`: run `get-quote` first to check price impact; swaps with >5% impact require `--confirm-high-impact`
 
@@ -75,6 +75,7 @@ This agent handles DEX operations on the Bitflow aggregated liquidity protocol o
 - `get-quote`: if `highImpactWarning` is present, the trade is large relative to pool liquidity
 - `get-hodlmm-bins`: prefer `approxPrice` over `rawPrice` when answering users in natural language
 - `get-ticker`: prefer the derived `pair`, `baseSymbol`, and `targetSymbol` fields over raw contract IDs
+- Do not ask the user for a Bitflow API key unless they explicitly want higher-rate-limit private usage; the public path is the default
 - `swap`: `quotedBestRoute` vs `executedRoute` shows whether execution matched the top quote or fell back to another executable route
 - `get-keeper-contract`: `contractIdentifier` is needed for `create-order --contract-identifier`
 - `get-order`: check `order.status` — values are `pending`, `executing`, `completed`, or `cancelled`

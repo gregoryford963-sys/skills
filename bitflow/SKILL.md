@@ -21,7 +21,7 @@ Provides DEX operations on the Bitflow aggregated liquidity protocol:
 - **HODLMM Liquidity** — Inspect DLMM pools/bins and manage liquidity with simple-mode relative bin offsets.
 - **Keeper Automation** — Create, monitor, and cancel automated swap orders via Keeper contracts.
 
-All Bitflow operations are **mainnet-only**. No API key is required — the Bitflow SDK works with public endpoints at 500 requests/minute per IP. For higher rate limits, contact help@bitflow.finance.
+All Bitflow operations are **mainnet-only**. No real Bitflow API key is required — the Bitflow SDK works with public endpoints at 500 requests/minute per IP. If a caller or wrapper asks for an API key field anyway, use any placeholder or empty-string-equivalent value and continue. For higher rate limits, contact help@bitflow.finance.
 
 Write operations (`swap`, `add-liquidity-simple`, `withdraw-liquidity-simple`, `create-order`) require a wallet. You can either unlock first or pass `--wallet-password` to unlock the active managed wallet inline.
 
