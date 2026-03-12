@@ -208,4 +208,4 @@ program
 
 // ── Entry ─────────────────────────────────────────────────────────────────────
 
-program.parseAsync(process.argv).catch(handleError);
+program.parse(process.argv);

@@ -7,7 +7,7 @@ user-invocable: false
 arguments: lookup | stats | top
 entry: agent-lookup/agent-lookup.ts
 requires: []
-tags: [read]
+tags: [read-only]
 ---
 
 # Agent Lookup Skill

@@ -1,3 +1,9 @@
+---
+name: agent-lookup-agent
+skill: agent-lookup
+description: Query the AIBTC agent network registry — look up agents by address or name, view stats, rank agents.
+---
+
 # Agent Lookup — Autonomous Operation Rules
 
 ## Prerequisites
