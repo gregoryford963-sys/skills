@@ -44,7 +44,7 @@ function parseCommaList(raw: string): string[] {
 // Parse YAML frontmatter from SKILL.md content (agentskills.io spec format)
 function parseFrontmatter(content: string, skillName: string): SkillEntry {
   // Extract the block between the first and second "---" delimiters
-  const fmMatch = content.match(/^---\n([\s\S]*?)\n---\n?/);
+  const fmMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
   if (!fmMatch) {
     throw new Error(`No YAML frontmatter found in ${skillName}/SKILL.md`);
   }

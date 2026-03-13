@@ -19,17 +19,9 @@ async function findSkillsRef(): Promise<string | null> {
   } catch {
     // not found locally
   }
-  // Fall back to PATH
-  try {
-    const proc = Bun.spawn(["which", "skills-ref"], {
-      stdout: "pipe",
-      stderr: "pipe",
-    });
-    await proc.exited;
-    if (proc.exitCode === 0) return "skills-ref";
-  } catch {
-    // not on PATH
-  }
+  // Fall back to PATH (cross-platform)
+  const pathResult = Bun.which("skills-ref");
+  if (pathResult) return "skills-ref";
   return null;
 }
 
@@ -72,7 +64,7 @@ const VALID_TAGS = [
 const SkillMetadataSchema = z.object({
   "user-invocable": z
     .string()
-    .regex(/^(true|false)$/, 'user-invocable must be "true" or "false"'),
+    .regex(/^false$/, 'user-invocable must be "false" — skills are invoked by Claude Code, not end users'),
   arguments: z.string().min(1, "arguments is required"),
   entry: z.string().min(1, "entry is required"),
   requires: z.string({
@@ -189,7 +181,7 @@ for await (const file of skillGlob2.scan({ cwd: repoRoot })) {
   }
 
   // Parse YAML frontmatter
-  const fmMatch = content.match(/^---\n([\s\S]*?)\n---\n?/);
+  const fmMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
   if (!fmMatch) {
     errors.push("missing YAML frontmatter");
     results.push({ file, passed: false, errors });
@@ -236,6 +228,19 @@ for await (const file of skillGlob2.scan({ cwd: repoRoot })) {
       errors.push(
         `metadata.requires: unknown skills [${unknownRequires.join(", ")}] — must reference existing skill directories`
       );
+    }
+
+    // Validate entry file(s) exist on disk
+    const entryFiles = parseCommaList(meta.entry);
+    for (const entryFile of entryFiles) {
+      const entryPath = join(repoRoot, entryFile);
+      try {
+        await Bun.file(entryPath).stat();
+      } catch {
+        errors.push(
+          `metadata.entry: file not found "${entryFile}"`
+        );
+      }
     }
   }
 
