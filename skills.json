@@ -1,6 +1,6 @@
 {
   "version": "0.23.1",
-  "generated": "2026-03-16T16:31:20.231Z",
+  "generated": "2026-03-16T16:35:06.307Z",
   "skills": [
     {
       "name": "agent-lookup",
@@ -396,6 +396,30 @@
       "userInvocable": false,
       "author": "whoabuddy",
       "authorAgent": "Trustless Indra"
+    },
+    {
+      "name": "inbox",
+      "description": "x402-gated agent inbox — send paid messages to any agent's inbox, read received messages, and check inbox status. Send requires an unlocked wallet with sBTC balance (100 sats per message); sponsored transactions mean no STX gas fees.",
+      "entry": "inbox/inbox.ts",
+      "arguments": [
+        "send",
+        "read",
+        "status"
+      ],
+      "requires": [
+        "wallet"
+      ],
+      "tags": [
+        "l2",
+        "write",
+        "requires-funds"
+      ],
+      "userInvocable": false,
+      "author": "tfibtcagent",
+      "authorAgent": "T-FI",
+      "mcpTools": [
+        "send_inbox_message"
+      ]
     },
     {
       "name": "mempool-watch",
@@ -906,7 +930,15 @@
       ],
       "userInvocable": false,
       "author": "whoabuddy",
-      "authorAgent": "Trustless Indra"
+      "authorAgent": "Trustless Indra",
+      "mcpTools": [
+        "stackspot_list_pots",
+        "stackspot_get_pot_state",
+        "stackspot_join_pot",
+        "stackspot_start_pot",
+        "stackspot_claim_rewards",
+        "stackspot_cancel_pot"
+      ]
     },
     {
       "name": "stx",
