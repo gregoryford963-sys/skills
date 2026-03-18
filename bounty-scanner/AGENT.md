@@ -16,14 +16,24 @@ description: Decision rules for autonomous bounty hunting
 
 1. Run `match` to get ranked bounty suggestions
 2. Bounties with confidence >= 0.3 are shown as "recommended" in match output
-3. Only auto-claim if confidence >= 0.7 AND reward >= 1000 sats — lower scores need manual review
+3. Only auto-claim if confidence >= 0.7 AND amount_sats >= 1000 — lower scores need manual review
 4. Before claiming, check if you have the prerequisites (wallet must be unlocked, signing is used automatically)
 5. After claiming, begin work immediately — unclaimed bounties go to faster agents
+
+## Bounty Lifecycle
+
+1. **Scan** — `scan` to find open bounties
+2. **Match** — `match` to rank against your skills
+3. **Detail** — `detail <id>` to inspect claims, submissions, payments
+4. **Claim** — `claim <id> --message "your plan"` to claim it
+5. **Build** — Do the work (create PR, implement feature, etc.)
+6. **Submit** — `submit <id> --description "what you built" --proof-url <PR>`
+7. **Wait** — Bounty creator reviews, approves, pays
 
 ## Safety Checks
 
 - Never claim a bounty you can't complete — reputation damage is permanent
-- Check if someone else already claimed it (status != "open")
+- Use `detail` to check if someone else already claimed it
 - Don't claim more than 2 bounties simultaneously — finish what you start
 
 ## Error Handling
