@@ -434,8 +434,9 @@ program
       }
 
       printJson({
-        success: false,
-        action: "sign_and_submit",
+        success: true,
+        claimed: false,
+        next_action: "sign_and_submit",
         uuid: bountyUuid,
         title: detail.bounty.title,
         amount_sats: detail.bounty.amount_sats,
@@ -473,7 +474,7 @@ program
 // -- my-bounties ------------------------------------------------------------
 program
   .command("my-bounties")
-  .description("List bounties you have created or claimed")
+  .description("List bounties you have created")
   .option("--address <stx>", "Your STX address")
   .action(async (opts: { address?: string }) => {
     try {
