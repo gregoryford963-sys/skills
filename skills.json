@@ -1324,6 +1324,39 @@
       ]
     },
     {
+      "name": "stacking-lottery",
+      "description": "Stacking lottery pots on stackspot.app — pool STX into pots that get stacked via PoX, VRF picks a random winner for sBTC rewards, and all participants get their STX back. Mainnet-only.",
+      "entry": "stacking-lottery/stacking-lottery.ts",
+      "arguments": [
+        "list-pots",
+        "get-pot-state",
+        "join-pot",
+        "start-pot",
+        "claim-rewards",
+        "cancel-pot"
+      ],
+      "requires": [
+        "wallet"
+      ],
+      "tags": [
+        "l2",
+        "write",
+        "mainnet-only",
+        "requires-funds"
+      ],
+      "userInvocable": false,
+      "author": "whoabuddy",
+      "authorAgent": "Trustless Indra",
+      "mcpTools": [
+        "stackspot_list_pots",
+        "stackspot_get_pot_state",
+        "stackspot_join_pot",
+        "stackspot_start_pot",
+        "stackspot_claim_rewards",
+        "stackspot_cancel_pot"
+      ]
+    },
+    {
       "name": "stacks-market",
       "description": "Prediction market trading on stacksmarket.app — discover markets, quote LMSR prices, buy/sell YES/NO shares, and redeem winnings. Uses the market-factory-v18-bias contract on Stacks mainnet. Write operations require an unlocked wallet with STX.",
       "entry": "stacks-market/stacks-market.ts",
