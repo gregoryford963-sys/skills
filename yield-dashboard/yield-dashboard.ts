@@ -212,7 +212,7 @@ async function readZestPosition(
 }
 
 async function readAlexPosition(
-  walletAddress: string
+  _walletAddress: string
 ): Promise<ProtocolPosition> {
   const pos: ProtocolPosition = {
     protocol: "ALEX DEX",
@@ -239,126 +239,27 @@ async function readAlexPosition(
     if (res.okay) {
       const balX = decodeTupleField(res.result, "balance-x") ?? 0n;
       const balY = decodeTupleField(res.result, "balance-y") ?? 0n;
+      // total-supply is in the get-pool-details tuple (uint128 in ALEX fixed-point, ALEX_FACTOR = 1e8)
+      const totalSupply = decodeTupleField(res.result, "total-supply") ?? 0n;
       pos.details.poolBalanceX = balX.toString();
+      // balance-y is uint128 in ALEX fixed-point (ALEX_FACTOR = 100_000_000).
+      // For aBTC with 8 decimal places: balY / ALEX_FACTOR * 1e8 = balY (numerically equal to sats).
       pos.details.poolBalanceY = balY.toString();
+      pos.details.poolTotalSupply = totalSupply.toString();
       // ALEX typical LP APY estimate from fee revenue
       pos.apyPct = 3.5;
       pos.details.apySource = "static estimate, not live";
 
-      // Extract pool-token contract principal from the decoded tuple
-      try {
-        const raw = res.result.startsWith("0x")
-          ? res.result.slice(2)
-          : res.result;
-        const cv = hexToCV(raw);
-        const decoded = cvToValue(cv, true) as Record<string, unknown>;
-        const poolTokenRaw = decoded["pool-token"];
-        // pool-token is a contract principal: "ADDRESS.contract-name"
-        const poolToken =
-          typeof poolTokenRaw === "string"
-            ? poolTokenRaw
-            : poolTokenRaw && typeof poolTokenRaw === "object"
-              ? String((poolTokenRaw as Record<string, unknown>).value ?? poolTokenRaw)
-              : null;
-
-        if (poolToken && poolToken.includes(".")) {
-          const [ptAddr, ptName] = poolToken.split(".");
-
-          // Get total LP supply
-          const supplyRes = await callReadOnly(
-            ptAddr,
-            ptName,
-            "get-total-supply",
-            []
-          );
-          const totalSupply: bigint = (() => {
-            if (!supplyRes.okay) return 0n;
-            try {
-              const supplyRaw = supplyRes.result.startsWith("0x")
-                ? supplyRes.result.slice(2)
-                : supplyRes.result;
-              const supplyCv = hexToCV(supplyRaw);
-              const supplyVal = cvToValue(supplyCv, true);
-              // May be wrapped in ok response
-              if (supplyVal && typeof supplyVal === "object" && "value" in (supplyVal as object)) {
-                const inner = (supplyVal as Record<string, unknown>).value;
-                if (typeof inner === "bigint") return inner;
-                if (typeof inner === "number") return BigInt(inner);
-              }
-              if (typeof supplyVal === "bigint") return supplyVal;
-              if (typeof supplyVal === "number") return BigInt(supplyVal);
-              return 0n;
-            } catch {
-              return 0n;
-            }
-          })();
-
-          // Get user's LP balance
-          const userArg =
-            "0x" +
-            Buffer.from(
-              serializeCV(standardPrincipalCV(walletAddress))
-            ).toString("hex");
-          const balRes = await callReadOnly(
-            ptAddr,
-            ptName,
-            "ft-get-balance",
-            [userArg]
-          );
-          const userLpBalance: bigint = (() => {
-            if (!balRes.okay) return 0n;
-            try {
-              const balRaw = balRes.result.startsWith("0x")
-                ? balRes.result.slice(2)
-                : balRes.result;
-              const balCv = hexToCV(balRaw);
-              const balVal = cvToValue(balCv, true);
-              // May be wrapped in ok response
-              if (balVal && typeof balVal === "object" && "value" in (balVal as object)) {
-                const inner = (balVal as Record<string, unknown>).value;
-                if (typeof inner === "bigint") return inner;
-                if (typeof inner === "number") return BigInt(inner);
-              }
-              if (typeof balVal === "bigint") return balVal;
-              if (typeof balVal === "number") return BigInt(balVal);
-              return 0n;
-            } catch {
-              return 0n;
-            }
-          })();
-
-          pos.details.lpBalance = userLpBalance.toString();
-          pos.details.lpTotalSupply = totalSupply.toString();
-
-          if (totalSupply > 0n) {
-            // User's share as a fraction
-            const lpShareNum = Number(userLpBalance);
-            const lpShareDen = Number(totalSupply);
-            const lpShare = lpShareDen > 0 ? lpShareNum / lpShareDen : 0;
-            pos.details.lpShare = lpShare;
-
-            // Compute value in sats:
-            // balance-x is wSTX in microSTX (1 STX ≈ 800 sats conservative)
-            // balance-y is aBTC in sats — use directly
-            const stxSats = (Number(balX) / 1_000_000) * 800;
-            const btcSats = Number(balY);
-            const totalPoolSats = stxSats + btcSats;
-
-            pos.valueSats = Math.round(lpShare * totalPoolSats);
-            pos.details.poolValueSats = Math.round(totalPoolSats);
-            pos.details.stxConversionRate = "800 sats/STX (conservative estimate)";
-          } else {
-            pos.details.lpShare = 0;
-            pos.details.note = "total LP supply is zero or unavailable";
-          }
-        } else {
-          pos.details.note = "pool-token field not found or not a contract principal";
-        }
-      } catch (e) {
-        // Graceful fallback: LP balance read failed, valueSats stays 0
-        pos.details.lpBalanceError = String(e);
-        pos.details.note = "LP token balance read failed; valueSats set to 0";
-      }
+      // ALEX AMM v2 tracks LP positions internally — there is no separate LP
+      // token contract exposing ft-get-balance per user. The reduce-position
+      // function takes a `percent` argument rather than a token amount, so
+      // user shares cannot be read via a read-only call. valueSats remains 0
+      // until the protocol exposes a user-position read-only function.
+      pos.details.note =
+        "ALEX AMM v2 does not expose user LP positions via read-only calls. " +
+        `Pool total supply: ${totalSupply.toString()} units. ` +
+        `Pool aBTC balance: ${Number(balY).toLocaleString()} (ALEX fixed-point). ` +
+        "valueSats requires on-chain user position tracking not yet available.";
     }
   } catch (e) {
     pos.details.error = String(e);
