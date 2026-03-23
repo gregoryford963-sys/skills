@@ -239,17 +239,32 @@ async function readAlexPosition(
     if (res.okay) {
       const balX = decodeTupleField(res.result, "balance-x") ?? 0n;
       const balY = decodeTupleField(res.result, "balance-y") ?? 0n;
+      // total-supply is in the get-pool-details tuple (uint128 in ALEX fixed-point, ALEX_FACTOR = 1e8)
+      const totalSupply = decodeTupleField(res.result, "total-supply") ?? 0n;
       pos.details.poolBalanceX = balX.toString();
+      // balance-y is uint128 in ALEX fixed-point (ALEX_FACTOR = 100_000_000).
+      // For aBTC with 8 decimal places: balY / ALEX_FACTOR * 1e8 = balY (numerically equal to sats).
       pos.details.poolBalanceY = balY.toString();
+      pos.details.poolTotalSupply = totalSupply.toString();
       // ALEX typical LP APY estimate from fee revenue
       pos.apyPct = 3.5;
       pos.details.apySource = "static estimate, not live";
+
+      // ALEX AMM v2 tracks LP positions internally — there is no separate LP
+      // token contract exposing ft-get-balance per user. The reduce-position
+      // function takes a `percent` argument rather than a token amount, so
+      // user shares cannot be read via a read-only call. valueSats remains 0
+      // until the protocol exposes a user-position read-only function.
+      pos.details.note =
+        "ALEX AMM v2 does not expose user LP positions via read-only calls. " +
+        `Pool total supply: ${totalSupply.toString()} units. ` +
+        `Pool aBTC balance: ${Number(balY).toLocaleString()} (ALEX fixed-point). ` +
+        "valueSats requires on-chain user position tracking not yet available.";
     }
   } catch (e) {
     pos.details.error = String(e);
   }
 
-  // LP token balance reading requires on-chain query for actual position value
   return pos;
 }
 
