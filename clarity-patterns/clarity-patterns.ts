@@ -37,6 +37,10 @@ program.command("list")
   .description("List all available pattern categories")
   .option("--group <group>", "filter by group: code, testing, registry")
   .action((opts) => {
+    if (opts.group && !GROUPS.includes(opts.group as Group)) {
+      console.log(JSON.stringify({ error: "Invalid group", valid: GROUPS }));
+      process.exit(1);
+    }
     const patterns = allPatterns(opts.group).map(p => ({ group: p.group, name: p.name, slug: p.slug }));
     console.log(JSON.stringify({ groups: GROUPS, total: patterns.length, patterns }, null, 2));
   });
@@ -56,7 +60,13 @@ program.command("get")
       match = all.find(p => p.slug === opts.slug);
     } else {
       const term = opts.name.toLowerCase();
-      match = all.find(p => p.name.toLowerCase().includes(term));
+      const nameMatches = all.filter(p => p.name.toLowerCase().includes(term));
+      if (nameMatches.length === 1) {
+        match = nameMatches[0];
+      } else if (nameMatches.length > 1) {
+        console.log(JSON.stringify({ error: "Multiple matches", tip: "Use --slug for exact match or --name with a more specific term", matches: nameMatches.map(p => ({ slug: p.slug, name: p.name, group: p.group })) }));
+        process.exit(1);
+      }
     }
     if (!match) {
       console.log(JSON.stringify({ error: "Pattern not found", tip: "Run \"list\" to see all available slugs" }));
@@ -84,8 +94,12 @@ program.command("all")
   .description("Output the full pattern library")
   .option("--group <group>", "filter by group: code, testing, registry")
   .action((opts) => {
+    if (opts.group && !GROUPS.includes(opts.group as Group)) {
+      console.log(JSON.stringify({ error: "Invalid group", valid: GROUPS }));
+      process.exit(1);
+    }
     const groups: Record<string, Pattern[]> = {};
-    const selected = opts.group && GROUPS.includes(opts.group as Group) ? [opts.group as Group] : [...GROUPS];
+    const selected = opts.group ? [opts.group as Group] : [...GROUPS];
     for (const g of selected) { groups[g] = PATTERNS[g]; }
     console.log(JSON.stringify({
       version: "1.0.0",
