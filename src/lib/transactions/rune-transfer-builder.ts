@@ -10,8 +10,8 @@
  * - P2TR output: rune change back to sender (if partial transfer)
  * - P2WPKH output: BTC change back to sender
  *
- * The Runestone always includes an explicit change pointer to avoid
- * burning remaining runes.
+ * The Runestone includes a change pointer only when the change output is
+ * actually included in the transaction.
  */
 
 import * as btc from "@scure/btc-signer";
@@ -183,6 +183,10 @@ export function buildRuneTransfer(options: RuneTransferOptions): RuneTransferRes
   //   Output 2: Rune change (remaining runes back to sender taproot)
   //   Output 3: BTC change (fee remainder back to sender segwit)
 
+  // Compute rune change sats BEFORE building Runestone so we know whether to include change pointer
+  const runeSats = runeUtxos.reduce((sum, u) => sum + u.value, 0);
+  const runeChangeSats = runeSats - DUST_THRESHOLD; // recipient gets dust from rune sats
+
   // Build Runestone
   const edict: RuneEdict = {
     block,
@@ -193,7 +197,7 @@ export function buildRuneTransfer(options: RuneTransferOptions): RuneTransferRes
 
   const runestoneScript = buildRunestoneScript({
     edict,
-    changeOutput: 2, // rune change is output 2
+    changeOutput: runeChangeSats >= DUST_THRESHOLD ? 2 : undefined, // only set when change output is included
   });
 
   // Output 0: OP_RETURN
@@ -206,9 +210,7 @@ export function buildRuneTransfer(options: RuneTransferOptions): RuneTransferRes
   tx.addOutputAddress(recipientAddress, BigInt(DUST_THRESHOLD), btcNetwork);
 
   // Output 2: Rune change back to sender taproot
-  // Carries remaining rune balance (Runestone change pointer = 2)
-  const runeSats = runeUtxos.reduce((sum, u) => sum + u.value, 0);
-  const runeChangeSats = runeSats - DUST_THRESHOLD; // recipient gets dust from rune sats
+  // Carries remaining rune balance (Runestone change pointer = 2, only when included)
   if (runeChangeSats >= DUST_THRESHOLD) {
     tx.addOutputAddress(senderTaprootAddress, BigInt(runeChangeSats), btcNetwork);
   }

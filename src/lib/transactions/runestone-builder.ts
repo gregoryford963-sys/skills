@@ -59,14 +59,14 @@ export interface RuneEdict {
 export interface RunestoneOptions {
   /** The edict (single transfer) */
   edict: RuneEdict;
-  /** Output index for remaining rune balance (change pointer) */
-  changeOutput: number;
+  /** Output index for remaining rune balance (change pointer) — omit to burn change (not recommended); set when change output is included */
+  changeOutput?: number;
 }
 
 /**
  * Build a Runestone OP_RETURN script for a single-edict rune transfer.
  *
- * Always includes an explicit change pointer to avoid burning remaining runes.
+ * Includes a change pointer only when the change output is actually included in the transaction.
  */
 export function buildRunestoneScript(options: RunestoneOptions): Uint8Array {
   const { edict, changeOutput } = options;
@@ -88,10 +88,12 @@ export function buildRunestoneScript(options: RunestoneOptions): Uint8Array {
   parts.push(tag0, edictAmount);
   parts.push(tag0, edictOutput);
 
-  // Tag 22: default output (change pointer)
-  const tag22 = encodeLEB128(22n);
-  const changeIdx = encodeLEB128(BigInt(changeOutput));
-  parts.push(tag22, changeIdx);
+  // Tag 22: default output (change pointer) — only when change output is included
+  if (changeOutput !== undefined) {
+    const tag22 = encodeLEB128(22n);
+    const changeIdx = encodeLEB128(BigInt(changeOutput));
+    parts.push(tag22, changeIdx);
+  }
 
   // Calculate total payload length
   const payloadLength = parts.reduce((sum, p) => sum + p.length, 0);
