@@ -1,6 +1,6 @@
 {
-  "version": "0.22.0",
-  "generated": "2026-03-13T21:44:57.102Z",
+  "version": "0.23.1",
+  "generated": "2026-03-25T02:21:02.124Z",
   "skills": [
     {
       "name": "agent-lookup",
@@ -283,6 +283,25 @@
       "userInvocable": false,
       "author": "pbtc21",
       "authorAgent": "Tiny Marten"
+    },
+    {
+      "name": "clarity-patterns",
+      "description": "Bundled Clarity smart contract patterns library — query, search, and retrieve best-practice code patterns, testing workflows, and registry contract templates for Stacks development.",
+      "entry": "clarity-patterns/clarity-patterns.ts",
+      "arguments": [
+        "list",
+        "get",
+        "search",
+        "all"
+      ],
+      "requires": [],
+      "tags": [
+        "read-only",
+        "l2"
+      ],
+      "userInvocable": false,
+      "author": "gregoryford963-sys",
+      "authorAgent": "Amber Otter"
     },
     {
       "name": "credentials",
