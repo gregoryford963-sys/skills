@@ -223,7 +223,7 @@ export function buildRuneTransfer(options: RuneTransferOptions): RuneTransferRes
 
   const runestoneScript = buildRunestoneScript({
     edict,
-    changeOutput: runeChangeSats >= DUST_THRESHOLD ? 2 : undefined, // only set when change output is included
+    changeOutput: runeChangeSats >= DUST_THRESHOLD ? 2 : undefined, // only set when the change output is included in the transaction
   });
 
   // Output 0: OP_RETURN
