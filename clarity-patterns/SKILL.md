@@ -201,27 +201,50 @@ Prevent rapid repeated actions.
 
 ### DAO Proposals with Historic Balances
 
-Use `at-block` for snapshot voting.
+> **Note:** `at-block` was removed in Stacks 3.4 (SIP-042, ~April 2 2025, BTC block 943,333). Contracts using `at-block` for snapshot voting must migrate to the alternative pattern below.
+
+**Stacks 3.4+ alternative:** Store a token balance snapshot at proposal creation time in contract storage instead of reading historic state at an old block hash.
 
 ```clarity
+;; Stacks 3.4+: at-block removed. Store snapshot at proposal creation time.
+(define-map ProposalSnapshots uint (list 1000 {voter: principal, balance: uint}))
+
 (define-map Proposals uint {
   votesFor: uint,
   votesAgainst: uint,
   status: uint,
   liquidTokens: uint,
-  blockHash: (buff 32)
+  snapshotBlock: uint
 })
 
-;; Get voting power at proposal creation
+;; At proposal creation: capture token balances for eligible voters
+;; (caller must supply voter list; balances read from current block)
+(define-public (create-proposal (voters (list 1000 principal)))
+  (let (
+    (proposal-id (+ (var-get last-proposal-id) u1))
+    (snapshots (map capture-balance voters)))
+    (map-set ProposalSnapshots proposal-id snapshots)
+    (map-set Proposals proposal-id {
+      votesFor: u0, votesAgainst: u0,
+      status: u0, liquidTokens: u0,
+      snapshotBlock: stacks-block-height})
+    (var-set last-proposal-id proposal-id)
+    (ok proposal-id)))
+
+(define-private (capture-balance (voter principal))
+  {voter: voter, balance: (unwrap-panic (contract-call? .token get-balance voter))})
+
+;; Get voting power from stored snapshot
 (define-read-only (get-vote-power (proposal-id uint) (voter principal))
-  (let ((proposal (unwrap! (map-get? Proposals proposal-id) u0)))
-    (at-block (get blockHash proposal)
-      (contract-call? .token get-balance voter))))
+  (let ((snapshots (default-to (list) (map-get? ProposalSnapshots proposal-id))))
+    (default-to u0 (get balance (unwrap-panic
+      (element-at? (filter (is-voter voter) snapshots) u0))))))
+
+(define-private (is-voter (voter principal) (entry {voter: principal, balance: uint}))
+  (is-eq voter (get voter entry)))
 
 ;; Quorum check: (>= (/ (* total-votes u100) liquid-supply) QUORUM_PERCENT)
 ```
-
-Example: [aibtc-action-proposal-voting](https://github.com/aibtcdev/aibtcdev-daos/blob/main/contracts/dao/extensions/aibtc-action-proposal-voting.clar)
 
 ### Fixed-Point Arithmetic
 
