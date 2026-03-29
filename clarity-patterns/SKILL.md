@@ -207,7 +207,8 @@ Prevent rapid repeated actions.
 
 ```clarity
 ;; Stacks 3.4+: at-block removed. Store snapshot at proposal creation time.
-(define-map ProposalSnapshots uint (list 1000 {voter: principal, balance: uint}))
+;; Using a composite-key map for O(1) lookup — no filter/list scan needed.
+(define-map ProposalSnapshots {proposalId: uint, voter: principal} uint)
 
 (define-map Proposals uint {
   votesFor: uint,
@@ -217,31 +218,31 @@ Prevent rapid repeated actions.
   snapshotBlock: uint
 })
 
+(define-data-var last-proposal-id uint u0)
+
 ;; At proposal creation: capture token balances for eligible voters
-;; (caller must supply voter list; balances read from current block)
+;; (caller supplies voter list; balances read from current block)
 (define-public (create-proposal (voters (list 1000 principal)))
   (let (
     (proposal-id (+ (var-get last-proposal-id) u1))
-    (snapshots (map capture-balance voters)))
-    (map-set ProposalSnapshots proposal-id snapshots)
+    (snapshot-block stacks-block-height))
+    (map (store-snapshot proposal-id) voters)
     (map-set Proposals proposal-id {
       votesFor: u0, votesAgainst: u0,
       status: u0, liquidTokens: u0,
-      snapshotBlock: stacks-block-height})
+      snapshotBlock: snapshot-block})
     (var-set last-proposal-id proposal-id)
     (ok proposal-id)))
 
-(define-private (capture-balance (voter principal))
-  {voter: voter, balance: (unwrap-panic (contract-call? .token get-balance voter))})
+(define-private (store-snapshot (proposal-id uint) (voter principal))
+  (map-set ProposalSnapshots
+    {proposalId: proposal-id, voter: voter}
+    (unwrap-panic (contract-call? .token get-balance voter))))
 
-;; Get voting power from stored snapshot
+;; O(1) lookup — no list scan, no filter
 (define-read-only (get-vote-power (proposal-id uint) (voter principal))
-  (let ((snapshots (default-to (list) (map-get? ProposalSnapshots proposal-id))))
-    (default-to u0 (get balance (unwrap-panic
-      (element-at? (filter (is-voter voter) snapshots) u0))))))
-
-(define-private (is-voter (voter principal) (entry {voter: principal, balance: uint}))
-  (is-eq voter (get voter entry)))
+  (default-to u0
+    (map-get? ProposalSnapshots {proposalId: proposal-id, voter: voter})))
 
 ;; Quorum check: (>= (/ (* total-votes u100) liquid-supply) QUORUM_PERCENT)
 ```
