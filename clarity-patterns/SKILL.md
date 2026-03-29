@@ -201,7 +201,7 @@ Prevent rapid repeated actions.
 
 ### DAO Proposals with Historic Balances
 
-> **Note:** `at-block` was removed in Stacks 3.4 (SIP-042, ~April 2 2025, BTC block 943,333). Contracts using `at-block` for snapshot voting must migrate to the alternative pattern below.
+> **Note:** `at-block` was removed in Stacks 3.4 (SIP-042, ~April 2 2025, BTC block 943,333). Contracts using `at-block` for snapshot voting must migrate to the alternative pattern below. The aibtcdev-daos DAO contracts that used `at-block` will need migration before the Stacks 3.4 activation.
 
 **Stacks 3.4+ alternative:** Store a token balance snapshot at proposal creation time in contract storage instead of reading historic state at an old block hash.
 
