@@ -1,3 +1,9 @@
+---
+name: nonce-manager-agent
+skill: nonce-manager
+description: Stacks transaction nonce management — prevent mempool collisions by acquiring and releasing nonces sequentially across concurrent skill executions.
+---
+
 # Nonce Manager — Agent Briefing
 
 ## Purpose
