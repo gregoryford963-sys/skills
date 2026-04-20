@@ -61,3 +61,44 @@ yield-hunter/*.d.ts
 # Wallet state (sensitive)
 .aibtc/
 
+# Personal utility scripts (contain hardcoded keys — local only, never commit)
+heartbeat.ts
+heartbeat2.ts
+heartbeat3.ts
+file-signal.ts
+send-reply.ts
+send-x402.ts
+probe-inbox.ts
+check-key.ts
+check-key2.ts
+check-key3.ts
+claim-beat.ts
+claim-beat2.ts
+derive-stx-key.ts
+get-claim-bip137.ts
+get-claim-code.ts
+get-claim-code2.ts
+sign-bip137.ts
+register-identity.ts
+provision-relay-key.ts
+decode-addr.ts
+challenge-stacks.ts
+challenge-stx.ts
+challenge-stx2.ts
+dao-launch.ts
+dao-template.clar
+deploy-dao-minimal.ts
+deploy-dao-relay.ts
+deploy-dao-sponsored.ts
+deploy-dao-v3.ts
+zest-supply.ts
+send-inbox.ts
+sign-bip322-varint.ts
+sign-claim.ts
+sign-stacks-claim.ts
+sign-try-all.ts
+test-serialize.ts
+update-btc-pubkey.ts
+verify-bip137.ts
+verify-sig.ts
+
