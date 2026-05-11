@@ -1,6 +1,6 @@
 {
   "version": "0.41.0",
-  "generated": "2026-05-11T17:04:41.503Z",
+  "generated": "2026-05-11T17:12:53.906Z",
   "skills": [
     {
       "name": "agent-lookup",
@@ -358,7 +358,12 @@
       ],
       "userInvocable": false,
       "author": "arc0btc",
-      "authorAgent": "Trustless Indra"
+      "authorAgent": "Trustless Indra",
+      "mcpTools": [
+        "arxiv_search",
+        "arxiv_compile_digest",
+        "arxiv_list_digests"
+      ]
     },
     {
       "name": "bitflow",
@@ -394,7 +399,20 @@
       ],
       "userInvocable": false,
       "author": "whoabuddy",
-      "authorAgent": "Trustless Indra"
+      "authorAgent": "Trustless Indra",
+      "mcpTools": [
+        "bitflow_get_ticker",
+        "bitflow_get_tokens",
+        "bitflow_get_swap_targets",
+        "bitflow_get_quote",
+        "bitflow_get_routes",
+        "bitflow_swap",
+        "bitflow_get_keeper_contract",
+        "bitflow_create_order",
+        "bitflow_get_order",
+        "bitflow_cancel_order",
+        "bitflow_get_keeper_user"
+      ]
     },
     {
       "name": "bitflow-hodlmm-deposit",
@@ -629,7 +647,16 @@
       ],
       "userInvocable": false,
       "author": "pbtc21",
-      "authorAgent": "Tiny Marten"
+      "authorAgent": "Tiny Marten",
+      "mcpTools": [
+        "bounty_list",
+        "bounty_get",
+        "bounty_match",
+        "bounty_claim",
+        "bounty_status",
+        "bounty_my_claims",
+        "bounty_stats"
+      ]
     },
     {
       "name": "btc",
@@ -873,7 +900,14 @@
       ],
       "userInvocable": false,
       "author": "whoabuddy",
-      "authorAgent": "Trustless Indra"
+      "authorAgent": "Trustless Indra",
+      "mcpTools": [
+        "credentials_list",
+        "credentials_get",
+        "credentials_set",
+        "credentials_delete",
+        "credentials_unlock"
+      ]
     },
     {
       "name": "dca",
@@ -1015,7 +1049,13 @@
       ],
       "userInvocable": false,
       "author": "sonic-mast",
-      "authorAgent": "Sonic Mast"
+      "authorAgent": "Sonic Mast",
+      "mcpTools": [
+        "dual_stacking_status",
+        "dual_stacking_get_rewards",
+        "dual_stacking_enroll",
+        "dual_stacking_opt_out"
+      ]
     },
     {
       "name": "erc8004",
@@ -1318,7 +1358,19 @@
       ],
       "userInvocable": false,
       "author": "whoabuddy",
-      "authorAgent": "Trustless Indra"
+      "authorAgent": "Trustless Indra",
+      "mcpTools": [
+        "identity_get",
+        "identity_get_last_id",
+        "identity_get_metadata",
+        "identity_register",
+        "identity_set_uri",
+        "identity_set_metadata",
+        "identity_set_approval",
+        "identity_set_wallet",
+        "identity_unset_wallet",
+        "identity_transfer"
+      ]
     },
     {
       "name": "inbox",
@@ -1732,7 +1784,45 @@
       ],
       "userInvocable": false,
       "author": "whoabuddy",
-      "authorAgent": "Trustless Indra"
+      "authorAgent": "Trustless Indra",
+      "mcpTools": [
+        "get_taproot_address",
+        "estimate_inscription_fee",
+        "inscribe",
+        "inscribe_reveal",
+        "get_inscription"
+      ]
+    },
+    {
+      "name": "ordinals-marketplace",
+      "description": "BTC ordinals marketplace operations via Magic Eden — browse active listings, list inscriptions for sale via PSBT flow, submit signed listings, buy inscriptions, and cancel active listings. BTC ordinals only (not Solana). Mainnet-only.",
+      "entry": "ordinals-marketplace/SKILL.md",
+      "arguments": [
+        "get-listings",
+        "list-for-sale",
+        "list-for-sale-submit",
+        "buy",
+        "cancel-listing"
+      ],
+      "requires": [
+        "wallet"
+      ],
+      "tags": [
+        "l1",
+        "write",
+        "mainnet-only",
+        "requires-funds"
+      ],
+      "userInvocable": false,
+      "author": "whoabuddy",
+      "authorAgent": "Trustless Indra",
+      "mcpTools": [
+        "ordinals_get_listings",
+        "ordinals_list_for_sale",
+        "ordinals_list_for_sale_submit",
+        "ordinals_buy",
+        "ordinals_cancel_listing"
+      ]
     },
     {
       "name": "ordinals-p2p",
@@ -1761,7 +1851,25 @@
       ],
       "userInvocable": false,
       "author": "secret-mars",
-      "authorAgent": "Secret Mars"
+      "authorAgent": "Secret Mars",
+      "mcpTools": [
+        "psbt_decode",
+        "psbt_sign",
+        "psbt_broadcast",
+        "psbt_create_ordinal_buy",
+        "ordinals_p2p_list_trades",
+        "ordinals_p2p_get_trade",
+        "ordinals_p2p_my_trades",
+        "ordinals_p2p_agents",
+        "ordinals_p2p_create_offer",
+        "ordinals_p2p_counter",
+        "ordinals_p2p_transfer",
+        "ordinals_p2p_cancel",
+        "ordinals_p2p_psbt_swap",
+        "taproot_get_pubkey",
+        "taproot_verify_cosig",
+        "taproot_multisig_guide"
+      ]
     },
     {
       "name": "paperboy",
@@ -1996,7 +2104,20 @@
       ],
       "userInvocable": false,
       "author": "whoabuddy",
-      "authorAgent": "Trustless Indra"
+      "authorAgent": "Trustless Indra",
+      "mcpTools": [
+        "reputation_append_response",
+        "reputation_approve_client",
+        "reputation_get_approved_limit",
+        "reputation_get_clients",
+        "reputation_get_feedback_count",
+        "reputation_get_last_index",
+        "reputation_get_summary",
+        "reputation_give_feedback",
+        "reputation_read_all_feedback",
+        "reputation_read_feedback",
+        "reputation_revoke_feedback"
+      ]
     },
     {
       "name": "runes",
@@ -2017,7 +2138,18 @@
       ],
       "userInvocable": false,
       "author": "whoabuddy",
-      "authorAgent": "Trustless Indra"
+      "authorAgent": "Trustless Indra",
+      "mcpTools": [
+        "runes_list_etchings",
+        "runes_get_etching",
+        "runes_get_holders",
+        "runes_get_activity",
+        "runes_get_address_balances",
+        "runes_get_address_activity",
+        "get_rune_balances",
+        "get_rune_utxos",
+        "transfer_rune"
+      ]
     },
     {
       "name": "sbtc",
@@ -2122,7 +2254,20 @@
       ],
       "userInvocable": false,
       "author": "whoabuddy",
-      "authorAgent": "Trustless Indra"
+      "authorAgent": "Trustless Indra",
+      "mcpTools": [
+        "set_hiro_api_key",
+        "get_hiro_api_key",
+        "delete_hiro_api_key",
+        "set_stacks_api_url",
+        "get_stacks_api_url",
+        "delete_stacks_api_url",
+        "get_server_version",
+        "check_relay_health",
+        "recover_sponsor_nonce",
+        "nonce_health",
+        "nonce_fill_gap"
+      ]
     },
     {
       "name": "signing",
@@ -2149,7 +2294,19 @@
       ],
       "userInvocable": false,
       "author": "whoabuddy",
-      "authorAgent": "Trustless Indra"
+      "authorAgent": "Trustless Indra",
+      "mcpTools": [
+        "stacks_sign_message",
+        "stacks_verify_message",
+        "btc_sign_message",
+        "btc_verify_message",
+        "schnorr_sign_digest",
+        "schnorr_verify_digest",
+        "nostr_sign_event",
+        "sip018_hash",
+        "sip018_sign",
+        "sip018_verify"
+      ]
     },
     {
       "name": "souldinals",
@@ -2173,7 +2330,14 @@
       ],
       "userInvocable": false,
       "author": "strange-lux-agent",
-      "authorAgent": "Strange Lux"
+      "authorAgent": "Strange Lux",
+      "mcpTools": [
+        "souldinals_inscribe_soul",
+        "souldinals_reveal_soul",
+        "souldinals_list_souls",
+        "souldinals_load_soul",
+        "souldinals_display_soul"
+      ]
     },
     {
       "name": "stacking",
@@ -2319,7 +2483,20 @@
       ],
       "userInvocable": false,
       "author": "whoabuddy",
-      "authorAgent": "Trustless Indra"
+      "authorAgent": "Trustless Indra",
+      "mcpTools": [
+        "stacks_market_buy_no",
+        "stacks_market_buy_yes",
+        "stacks_market_get",
+        "stacks_market_get_position",
+        "stacks_market_list",
+        "stacks_market_quote_buy",
+        "stacks_market_quote_sell",
+        "stacks_market_redeem",
+        "stacks_market_search",
+        "stacks_market_sell_no",
+        "stacks_market_sell_yes"
+      ]
     },
     {
       "name": "stackspot",
@@ -2471,7 +2648,20 @@
       ],
       "userInvocable": false,
       "author": "whoabuddy",
-      "authorAgent": "Trustless Indra"
+      "authorAgent": "Trustless Indra",
+      "mcpTools": [
+        "tenero_holder_stats",
+        "tenero_market_stats",
+        "tenero_market_summary",
+        "tenero_search",
+        "tenero_token_info",
+        "tenero_top_gainers",
+        "tenero_top_losers",
+        "tenero_trending_pools",
+        "tenero_wallet_holdings",
+        "tenero_wallet_trades",
+        "tenero_whale_trades"
+      ]
     },
     {
       "name": "tokens",
@@ -2549,7 +2739,12 @@
       ],
       "userInvocable": false,
       "author": "whoabuddy",
-      "authorAgent": "Trustless Indra"
+      "authorAgent": "Trustless Indra",
+      "mcpTools": [
+        "request_validation",
+        "get_validation_status",
+        "get_validation_summary"
+      ]
     },
     {
       "name": "wallet",
@@ -2591,6 +2786,34 @@
         "wallet_set_timeout",
         "wallet_status",
         "get_wallet_info"
+      ]
+    },
+    {
+      "name": "wot",
+      "description": "Web of Trust operations for Nostr pubkeys — trust scoring, sybil detection, trust path analysis, neighbor discovery, follow recommendations, and network health. Free tier (wot.klabo.world, 50 req/day) with paid fallback (maximumsats.com, 100 sats via L402). Covers 52K+ pubkeys and 2.4M+ zap-weighted trust edges. Use --key-source to select nip06 (default), taproot, or stacks derivation path.",
+      "entry": "wot/SKILL.md",
+      "arguments": [
+        "trust-score",
+        "sybil-check",
+        "neighbors",
+        "trust-path",
+        "recommend",
+        "network-health",
+        "config",
+        "cache-status"
+      ],
+      "requires": [
+        "wallet"
+      ],
+      "tags": [
+        "read-only"
+      ],
+      "userInvocable": false,
+      "author": "arc0btc",
+      "authorAgent": "Trustless Indra",
+      "mcpTools": [
+        "nostr_get_pubkey",
+        "nostr_get_profile"
       ]
     },
     {
@@ -2648,7 +2871,13 @@
       ],
       "userInvocable": false,
       "author": "cocoa007",
-      "authorAgent": "Fluid Briar"
+      "authorAgent": "Fluid Briar",
+      "mcpTools": [
+        "yield_dashboard_overview",
+        "yield_dashboard_positions",
+        "yield_dashboard_apy_breakdown",
+        "yield_dashboard_rebalance"
+      ]
     },
     {
       "name": "yield-hunter",
