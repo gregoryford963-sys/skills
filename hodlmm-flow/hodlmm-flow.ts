@@ -31,6 +31,7 @@ const DEFAULT_SWAP_COUNT = 100;
 const TX_PAGE_SIZE = 50;
 const DLMM_CORE = "SP1PFR4V08H1RAZXREBGFFQ59WB739XM8VVGTFSEA.dlmm-core-v-1-1";
 const LIQUIDATOR_PREFIX = "SP16B5ZKHJAK4CSHQ1WYSZE57NWMKW0KDX6YZKH4J.liquidator";
+const LIQUIDATOR_ADDRESS = LIQUIDATOR_PREFIX.split(".")[0];
 const CACHE_DIR = join(process.env.HOME ?? "/tmp", ".hodlmm-flow-cache");
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
@@ -148,7 +149,8 @@ interface FlowAnalysis {
    * Note: the denominator is all contract_call txs on this pool, not just swap-eligible txs.
    */
   coverage_rate: number | null;
-  /** True when coverage_rate < 1.0, indicating some transactions were not recognized as swaps */
+  /** True when coverage_rate < 1.0. Note: denominator includes all contract_call txs on the pool
+   *  (add-liquidity, claim-fees, rebalance, etc.), so this can fire even when all swaps are captured. */
   coverage_warning: boolean;
   partial?: true;
   partial_reason?: string;
@@ -174,6 +176,11 @@ function handleError(error: unknown): void {
   const message = error instanceof Error ? error.message : String(error);
   printJson({ error: message });
   process.exit(1);
+}
+
+function isRateLimitError(e: unknown): boolean {
+  const code = (e as { statusCode?: number }).statusCode;
+  return code === 429 || (e instanceof Error && e.message.includes("Rate limited"));
 }
 
 // ---------------------------------------------------------------------------
@@ -395,8 +402,7 @@ async function enrichSwaps(txs: HiroTx[]): Promise<SwapRecord[]> {
           blockTime: tx.block_time,
           blockHeight: tx.block_height,
           direction,
-          // No liquidation function exists on dlmm-swap-router-v-1-1; metric reserved for future contracts
-          isLiquidation: false,
+          isLiquidation: tx.sender_address.startsWith(LIQUIDATOR_ADDRESS),
           functionName: fn,
           hops: [],
           totalDx: 0n,
@@ -424,8 +430,7 @@ async function enrichSwaps(txs: HiroTx[]): Promise<SwapRecord[]> {
         blockTime: tx.block_time,
         blockHeight: tx.block_height,
         direction,
-        // No liquidation function exists on dlmm-swap-router-v-1-1; metric reserved for future contracts
-        isLiquidation: false,
+        isLiquidation: tx.sender_address.startsWith(LIQUIDATOR_ADDRESS),
         functionName: tx.contract_call!.function_name,
         hops,
         totalDx,
@@ -912,9 +917,7 @@ export async function analyzePool(
   try {
     fetchResult = await fetchSwapTransactions(contract, swapCount, windowSeconds);
   } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e);
-    if ((e as { statusCode?: number }).statusCode === 429 || msg.includes("Rate limited")) {
-      // statusCode === 429 is set by fetchJson; string fallback handles wrapped errors
+    if (isRateLimitError(e)) {
       fetchResult = { txs: [], totalFetched: 0 };
       isPartial = true;
       partialReason = "hiro_rate_limited";
@@ -938,8 +941,7 @@ export async function analyzePool(
   try {
     swaps = await enrichSwaps(txs);
   } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e);
-    if (((e as { statusCode?: number }).statusCode === 429 || msg.includes("Rate limited")) && txs.length > 0) {
+    if (isRateLimitError(e) && txs.length > 0) {
       // enrichSwaps uses Promise.allSettled so individual failures are handled;
       // if the outer call throws it means the rate limit hit during fetchTxEvents
       // outside of the batch — treat as partial
